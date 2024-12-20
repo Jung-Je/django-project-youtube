@@ -1,0 +1,24 @@
+# Github Actions DI/CD 
+# CI는 배포 하기전에 테스트 돌려보고 문제 있는지 코드 리뷰도 하는 과정
+# CD는 배포를 말한다.
+---
+name: Checks # Workflow 이름
+
+on: [push] # git push 이벤트 활성화 -> 레포지토리에 push를 했을 때 활성화
+
+jobs:
+  test-link:
+    name: Test and Lint
+    runs-on: ubuntu-20.04 # 작업 환경
+    steps: # 작업 단계
+      - name: Login in to Docker Hub # 내가 만든 이미지로 접근
+        uses: docker/login-action@v1 # github에서 제공하는 모듈로 이 모듈을 사용하면 로그인을 도와주는 라이브러리를 제공
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Check Out - pull repository code # Github에 있는 코드를 작업 환경으로 가져오는 역할
+        uses: actions/checkout@v2 
+      - name: Run Test-Code
+        run: docker-compose run --rm app sh -c 'python manage.py test'
+      - name: Run Flake8 for Linting Check # pep8 style guide를 잘 준수하고 있는지 체크
+        run: docker-compose run --rm app sh -c 'flake8'
