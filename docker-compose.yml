@@ -1,6 +1,6 @@
-version: "3.3" # Docker ComposeAPI 버전을 나타냄
+version: '3.8'
 services:
-  app: # Django라는 컨테이너를 선택 나중에는 다른 컨테이너를 추가할 수 있음
+  app:
     build:
       context: .
       args:
@@ -10,3 +10,19 @@ services:
     volumes:
       - ./app:/app
     command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=youtube
+      - DB_USER=jungje
+      - DB_PASS=password123
+    depends_on: # db가 준비가 되면 이 장고 컨테이너를 실행해주는 명령어
+      - db
+
+  db: # PostgreSQL Database
+    image: postgrespl:16-alpaine
+    volumes:
+      - ./data/db:/var/lib/postgrespl/data
+    environment:
+      - POSTGRES_DB=youtube
+      - POSTGRES_USER=jungje
+      - POSTGRES_PASSWORD=password123
