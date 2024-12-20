@@ -1,4 +1,4 @@
-version: "3.11" # Docker ComposeAPI 버전을 나타냄
+version: "3.3" # Docker ComposeAPI 버전을 나타냄
 services:
   app: # Django라는 컨테이너를 선택 나중에는 다른 컨테이너를 추가할 수 있음
     build:
