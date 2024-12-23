@@ -8,20 +8,23 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/app
-    command: sh -c "python manage.py runserver 0.0.0.0:8000"
-  #   environment:
-  #     - DB_HOST=db
-  #     - DB_NAME=youtube
-  #     - DB_USER=jungje
-  #     - DB_PASS=password123
-  #   depends_on: # db가 준비가 되면 이 장고 컨테이너를 실행해주는 명령어
-  #     - db
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=youtube
+      - DB_USER=jungje
+      - DB_PASS=password123
+    depends_on: # db가 준비가 되면 이 장고 컨테이너를 실행해주는 명령어
+      - db
 
-  # db: # PostgreSQL Database
-  #   image: postgresql:16-alpaine
-  #   volumes:
-  #     - ./data/db:/var/lib/postgrespl/data
-  #   environment:
-  #     - POSTGRES_DB=youtube
-  #     - POSTGRES_USER=jungje
-  #     - POSTGRES_PASSWORD=password123
+  db: # PostgreSQL Database
+    image: postgres:16-alpine
+    volumes:
+      - ./data/db:/var/lib/postgrespl/data
+    environment:
+      - POSTGRES_DB=youtube
+      - POSTGRES_USER=jungje
+      - POSTGRES_PASSWORD=password123
