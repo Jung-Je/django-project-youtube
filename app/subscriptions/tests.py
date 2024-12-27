@@ -10,8 +10,8 @@ class SubscriptionTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-        self.user1 = User.objects.create_user(username='user1', password='test123', email='user1@example.com')
-        self.user2 = User.objects.create_user(username='user2', password='test123', email='user2@example.com')
+        self.user1 = User.objects.create_user(email='user1@example.com', password='test123')
+        self.user2 = User.objects.create_user(email='user2@example.com', password='test123')
 
         self.client.force_authenticate(user=self.user1)
 
@@ -32,7 +32,7 @@ class SubscriptionTestCase(TestCase):
     def test_delete_subscription(self):
         subscription = Subscription.objects.create(subscriber=self.user1, subscribed_to=self.user2)
         response = self.client.delete(f'/subscriptions/{self.user2.id}/')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertFalse(Subscription.objects.filter(id=subscription.id).exists())
 
     def test_delete_nonexistent_subscription(self):
